@@ -13,3 +13,5 @@ id[0]=$MoId[0]&amount[0]=$amount[0]&div[0]=$divisibility[0]
 ```
 
 Everyone, please use it too!
+
+[Slide Link](https://github.com/ChocoTanaka/symbol_readableuri/blob/master/Experiment%20to%20Simplify%20Symbol%20Tx%20Using%20Readable%20URIs.pdf)
