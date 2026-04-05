@@ -71,7 +71,7 @@ class _Page2state extends State<Page2> {
           ),
         ),
         Text(
-          mo.Id,
+          mo.Id != XYMID ? "XYM" : mo.Id,
           style: TextStyle(
             fontSize: 20.0,
           ),

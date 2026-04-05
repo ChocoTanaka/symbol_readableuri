@@ -169,11 +169,11 @@ class _Page1state extends State<Page1> {
                       onPressed:() async{
                         List<Mosaic> Mosaics = [];
                         try{
-                          if(amount !=''){
+                          if(amount !='' || amount !='0'){
                             BigInt inputAmount = toBigInt(amount, XYMDIV);
                             Mosaics.add(Mosaic.fromParams(id: XYMID, amount: inputAmount, div: XYMDIV));
                           }
-                          if(amountmosaic1 != ''){
+                          if(amountmosaic1 != ''|| amount !='0'){
                             int div = await setdiv(idmosaic1);
                             if(div == 9){
                               throw new Exception("Wrong Id :${idmosaic1}");
