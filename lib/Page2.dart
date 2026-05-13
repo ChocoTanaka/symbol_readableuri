@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:symbol_readableuri/Symbol.dart';
+import 'Web3.dart';
 import 'const.dart';
 
 class Page2 extends StatefulWidget {
@@ -191,7 +191,11 @@ class _Page2state extends State<Page2> {
                   );
                 },
               );
-              await await Tx_Pay().then((value) {
+              final tx_readable = buildTransaction(NType_Now, Tx_Readables);
+
+              print(tx_readable);
+
+              await Tx_Pay(tx_readable).then((value) {
                 Result = value;
               });
               print(Result);

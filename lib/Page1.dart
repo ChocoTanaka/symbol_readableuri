@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'Symbol.dart';
+import 'Web3.dart';
 import 'const.dart';
 
 class Page1 extends StatefulWidget {
@@ -175,12 +176,8 @@ class _Page1state extends State<Page1> {
                           }
                           if(amountmosaic1 != ''|| amount !='0'){
                             int div = await setdiv(idmosaic1);
-                            if(div == 9){
-                              throw new Exception("Wrong Id :${idmosaic1}");
-                            }else{
-                              BigInt inputAmount = toBigInt(amountmosaic1, div);
-                              Mosaics.add(Mosaic.fromParams(id: idmosaic1, amount: inputAmount, div: div));
-                            }
+                            BigInt inputAmount = toBigInt(amountmosaic1, div);
+                            Mosaics.add(Mosaic.fromParams(id: idmosaic1, amount: inputAmount, div: div));
                           }
                         }catch(e){
                           print(e.toString());
@@ -188,7 +185,7 @@ class _Page1state extends State<Page1> {
                         if(Mosaics.length>0){
                           setState(() {
                             final uri =
-                            makeuri(M_Address, parseNetwork_s(NType_Now), Mosaics);
+                            makeuri(M_Address,NType_Now, Mosaics);
                             print(uri);
                             generatedUri = uri;
                             isShow = !isShow;

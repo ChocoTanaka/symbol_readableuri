@@ -1,30 +1,17 @@
 import 'dart:convert';
 import 'package:symbol_sdk/index.dart';
 import 'package:symbol_sdk/CryptoTypes.dart' as ct;
-import 'package:symbol_sdk/symbol/index.dart';
+import 'package:symbol_sdk/symbol/index.dart' hide Address;
 import 'package:http/http.dart' as http;
-import 'package:symbol_sdk/symbol/models.dart';
-import 'const.dart';
+import 'package:symbol_sdk/symbol/models.dart' hide Address;
 import 'dart:math'as math;
-import 'package:collection/collection.dart';
+import 'const.dart';
 
-
-
-late String pubkey = const String.fromEnvironment("pubkey");
-late String prikey = const String.fromEnvironment("prikey");
-late String Address = 'TCWXK7ZZW7WGEKSJ5AOADFEXMWIZOMKFBCLALPY';
-
-late String g1 = 'TCTK2JHDMEHFNXD4HY6KQ62UOTKM3HKTX4O7O2I';
-late String g2 = 'TAFO6KT5EYOJSKIQYHZM5EN3WQDEO2YPOYQTRJA';
-late String g3 = 'TCPK7KUF3DXROUZ63F2M7WBPOHDBMORG5XWOMQI';
 
 String M_Address = Address;
 
-
-List<String> NodeList_t = ['	testnet1.symbol-mikun.net', '001-sai-dual.symboltest.net','t.sakia.harvestasya.com','2.dusanjp.com'];
 late String Node = '';
 
-final String XYMID = "72C0212E67A08BCE";
 
 NodeJson MyNode = NodeJson();
 
@@ -33,8 +20,28 @@ class NodeJson{
   int roles = 0;
 }
 
-var facade = SymbolFacade(Network.TESTNET);
-NetworkType? NT = N_Now(NType_Now);
+NetworkType NT_Now(String NT){
+  switch (NT){
+    case "test":
+      return NetworkType.TESTNET;
+    case "main":
+      return NetworkType.MAINNET;
+    default:
+      return NetworkType.MAINNET;
+  }
+}
+
+Network N_Now(String NT){
+  switch (NT){
+    case "test":
+      return Network.TESTNET;
+    case "main":
+      return Network.MAINNET;
+    default:
+      return Network.MAINNET;
+  }
+}
+
 
 class Account_amount{
   late List<Mosaics_Mine> mosaics = [];
@@ -163,34 +170,39 @@ Future<int> setdiv(String Id) async{
       }
     }
   }
-  return 9;
+  throw new Exception("Wrong Id :${Id}");
 }
 
-Future<String> Tx_Pay() async{
+
+//This time, only use transfer.
+Future<String> Tx_Pay(Map<String, dynamic> build_tx) async{
   var keyPair = KeyPair(ct.PrivateKey(prikey));
+  var facade = SymbolFacade(N_Now(build_tx["Network"]));
   var AggTx = AggregateCompleteTransactionV3(
-    network: NT,
+    network: NT_Now(build_tx["Network"]),
     signerPublicKey: PublicKey(keyPair.publicKey.bytes),
     deadline: Timestamp(facade.network.fromDatetime(DateTime.now().toUtc()).addHours(2).timestamp),
   );
-  Tx_Readables.forEach((tx){
+  build_tx["Transaction"].forEach((tx){
     List<UnresolvedMosaic> mos = [];
-    tx.Mosaics.forEach((mo){
+    tx["Mosaics"].forEach((mo){
       mos.add(
           UnresolvedMosaic(
-            mosaicId: UnresolvedMosaicId(mo.Id),
-            amount: Amount(mo.Amount)
+            mosaicId: UnresolvedMosaicId(mo["Id"]),
+            amount: Amount(BigInt.parse(mo["Amount"]))
           )
       );
     });
+    //tx[“Action”] fits this description, but I can't think of a good way to write it,
+    // and the intermediate representation changes depending on the tx["Action"].
     var inner1 = EmbeddedTransferTransactionV1(
-      network: NT,
-      recipientAddress : UnresolvedAddress(tx.Address),
+      network: NT_Now(build_tx["Network"]),
+      recipientAddress : UnresolvedAddress(tx["Address"]),
       signerPublicKey: PublicKey(keyPair.publicKey.bytes),
       mosaics: mos,
     );
-    if(tx.Message != ""){
-      inner1.message = MessageEncorder.toPlainMessage(tx.Message);
+    if(tx["Message"] != ""){
+      inner1.message = MessageEncorder.toPlainMessage(tx["Message"]);
     }
     AggTx.transactions.add(inner1);
   });
